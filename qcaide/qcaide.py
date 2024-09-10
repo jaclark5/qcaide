@@ -3,7 +3,6 @@
 import argparse
 import json
 import sys
-
 import tomllib
 from dataclasses import dataclass
 from datetime import datetime
@@ -37,17 +36,17 @@ readme_tmpl = """
 ## QCSubmit Generation Pipeline
 
 {% for p in sub.pipeline %}
-{% if p["filename"] %}
-* `{{p["filename"]}}`: {{p["description"]}}
+{% if p.filename %}
+* `{{p.filename}}`: {{p.description}}
 {% else %}
-* {{p["description"]}}
+* {{p.description}}
 {% endif %}
 {% endfor %}
 
 ## QCSubmit Manifest
 
 {% for p in sub.manifest %}
-* `{{p["filename"]}}`: {{p["description"]}}
+* `{{p.filename}}`: {{p.description}}
 {% endfor %}
 
 ## Metadata
@@ -68,9 +67,47 @@ torsion_drive_line = Environment(loader=BaseLoader()).from_string(
 )
 
 
+@dataclass
+class Pipeline:
+    filename: str
+    description: str
+
+
+@dataclass
+class Manifest:
+    filename: str
+    description: str
+
+
 class Submission:
+    name: str
+    description: str
+    short_description: str
+    class_: str  # alias class from toml, enum of optimization | torsiondrive
+    purpose: str
+    submitter: str
+    generator: str | None  # defaults to submitter if omitted
+    pipeline: list[Pipeline]
+    manifest: list[Manifest]
+
     def __init__(self):
         pass
+
+    @classmethod
+    def default(cls):
+        self = cls()
+
+        self.name = ""
+        self.description = ""
+        self.short_description = ""
+        self.class_ = ""
+        self.purpose = ""
+        self.submitter = ""
+        self.generator = ""
+        self.pipeline = ""
+        self.manifest = [Manifest("", "")]
+
+        return self
 
     @classmethod
     def from_toml(cls, filename):
@@ -98,8 +135,8 @@ class Submission:
         else:
             self.generator = self.submitter
 
-        self.pipeline = data["pipeline"]
-        self.manifest = data["manifest"]
+        self.pipeline = [Pipeline(**p) for p in data["pipeline"]]
+        self.manifest = [Manifest(**d) for d in data["manifest"]]
 
         return self
 
