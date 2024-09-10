@@ -1,0 +1,44 @@
+# OpenFF Alkane Torsion Drives v1.0
+
+## Description
+
+A torsion drive data set created to improve the coverage of alkane and alkene
+parameters in Sage.
+
+## General Information
+
+* Date: today
+* Class: OpenFF TorsionDrive Dataset
+* Purpose: Improve proper torsion coverage in Sage
+* Name: OpenFF Alkane Torsion Drives v1.0
+* Number of unique molecules: 
+* Number of filtered molecules: 
+* Number of conformers: 
+* Number of conformers per molecule (min, mean, max): , , 
+* Mean molecular weight: 
+* Max molecular weight: 
+* Charges: 
+* Dataset submitter: Brent Westbrook
+* Dataset generator: Michael Shirts
+
+## QCSubmit Generation Pipeline
+
+* `generate-dataset.py`: This script shows how the dataset was prepared from the input file `input.smi`.
+* The list of SMILES in `input.smi` were curated by hand to correspond to
+alka/ene parameters missing coverage in Sage.
+
+## QCSubmit Manifest
+
+* `generate-dataset.py`: Script describing dataset generation and submission
+* `input.smi`: Input SMILES
+* `input-environment.yaml`: Environment file used to create Python environment for the script
+* `full-environment.yaml`: Fully-resolved environment used to execute the script
+* `td.toml`: Experimental input file for defining variables used throughout the QCA submission process
+* `dataset.json.bz2`: Compressed dataset ready for submission
+* `dataset.pdf`: Visualization of dataset molecules
+* `dataset.smi`: Smiles strings for dataset molecules
+
+## Metadata
+
+* elements: 
+* Spec: 

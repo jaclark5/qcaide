@@ -10,10 +10,11 @@ from pathlib import Path
 
 from jinja2 import BaseLoader, Environment
 
-readme_tmpl = """
+readme_tmpl = """\
 # {{sub.name}}
 
 ## Description
+
 {{sub.description}}
 
 ## General Information
@@ -36,19 +37,18 @@ readme_tmpl = """
 ## QCSubmit Generation Pipeline
 
 {% for p in sub.pipeline %}
-{% if p.filename %}
+{%- if p.filename -%}
 * `{{p.filename}}`: {{p.description}}
-{% else %}
+{% else -%}
 * {{p.description}}
-{% endif %}
-{% endfor %}
+{%- endif -%}
+{%- endfor %}
 
 ## QCSubmit Manifest
 
-{% for p in sub.manifest %}
+{% for p in sub.manifest -%}
 * `{{p.filename}}`: {{p.description}}
 {% endfor %}
-
 ## Metadata
 
 * elements: {{elements}}
@@ -72,11 +72,17 @@ class Pipeline:
     description: str
     filename: str | None = None
 
+    def __post_init__(self):
+        self.description = self.description.strip()
+
 
 @dataclass
 class Manifest:
     description: str
     filename: str
+
+    def __post_init__(self):
+        self.description = self.description.strip()
 
 
 class Submission:
@@ -114,9 +120,9 @@ class Submission:
         self = cls()
         with open(filename, "rb") as f:
             data = tomllib.load(f)
-        self.name = data["name"]
-        self.description = data["description"]
-        self.short_description = data["short_description"]
+        self.name = data["name"].strip()
+        self.description = data["description"].strip()
+        self.short_description = data["short_description"].strip()
         match data["class"]:
             case "torsiondrive":
                 self.class_ = "OpenFF TorsionDrive Dataset"
@@ -127,8 +133,8 @@ class Submission:
                     f"warning: unrecognized dataset class: {misc}",
                     file=sys.stderr,
                 )
-        self.purpose = data["purpose"]
-        self.submitter = data["submitter"]
+        self.purpose = data["purpose"].strip()
+        self.submitter = data["submitter"].strip()
 
         if gen := data.get("generator", None):
             self.generator = gen
