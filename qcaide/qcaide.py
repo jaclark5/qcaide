@@ -14,7 +14,7 @@ readme_tmpl = """
 # {{sub.name}}
 
 ## Description
-{{sub.description -}}
+{{sub.description}}
 
 ## General Information
 
@@ -69,14 +69,14 @@ torsion_drive_line = Environment(loader=BaseLoader()).from_string(
 
 @dataclass
 class Pipeline:
-    filename: str
     description: str
+    filename: str | None = None
 
 
 @dataclass
 class Manifest:
-    filename: str
     description: str
+    filename: str
 
 
 class Submission:
