@@ -99,21 +99,27 @@ class Submission:
     def __init__(self):
         pass
 
-    @classmethod
-    def default(cls):
-        self = cls()
+    @staticmethod
+    def default() -> str:
+        "Return the default config file in TOML format as a str"
 
-        self.name = ""
-        self.description = ""
-        self.short_description = ""
-        self.class_ = ""
-        self.purpose = ""
-        self.submitter = ""
-        self.generator = ""
-        self.pipeline = ""
-        self.manifest = [Manifest("", "")]
+        return """\
+name = ""
+description = ""
+short_description = ""
+class = ""
+purpose = ""
+submitter = ""
+generator = ""
 
-        return self
+[[pipeline]]
+filename = ""
+description = ""
+
+[[manifest]]
+filename = ""
+description = ""\
+        """
 
     @classmethod
     def from_toml(cls, filename):
@@ -198,6 +204,10 @@ def readme(args):
     )
 
 
+def default(args):
+    print(Submission.default())
+
+
 def main():
     parser = argparse.ArgumentParser(prog="qcaide")
     subparsers = parser.add_subparsers(required=True, help="sub-command help")
@@ -209,6 +219,9 @@ def main():
     readme_p = subparsers.add_parser("readme")
     readme_p.add_argument("input_file")
     readme_p.set_defaults(func=readme)
+
+    default_p = subparsers.add_parser("default")
+    default_p.set_defaults(func=default)
 
     args = parser.parse_args()
     args.func(args)
