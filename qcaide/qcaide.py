@@ -192,16 +192,21 @@ def readme(args):
     )
 
 
-parser = argparse.ArgumentParser(prog="qcaide")
-subparsers = parser.add_subparsers(required=True, help="sub-command help")
+def main():
+    parser = argparse.ArgumentParser(prog="qcaide")
+    subparsers = parser.add_subparsers(required=True, help="sub-command help")
 
-create_p = subparsers.add_parser("create")
-create_p.add_argument("input_file")
-create_p.set_defaults(func=create)
+    create_p = subparsers.add_parser("create")
+    create_p.add_argument("input_file")
+    create_p.set_defaults(func=create)
 
-readme_p = subparsers.add_parser("readme")
-readme_p.add_argument("input_file")
-readme_p.set_defaults(func=readme)
+    readme_p = subparsers.add_parser("readme")
+    readme_p.add_argument("input_file")
+    readme_p.set_defaults(func=readme)
 
-args = parser.parse_args()
-args.func(args)
+    args = parser.parse_args()
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
