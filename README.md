@@ -26,24 +26,36 @@ qcaide default
 ```
 
 This prints to stdout, so you'll likely want to direct the output into a file,
-which will look something like the example below.
+which will look something like the example below, but without any of the filled
+data fields. Note that the comments will not be present when run.
 
 ``` toml
-name = ""
+name = "OpenFF Sage 2.0.0 Torsion Drive Training Dataset v1.0"
 description = ""
-short_description = ""
-class = ""
-purpose = ""
-submitter = ""
-generator = ""
+short_description = "B3LYP-D3BJ/DZVP conformers applicable to drug-like molecules for OpenFF 2.0.0 Sage"
+class = ""   # Either optimization or torsiondrive
+purpose = "Complete set of training data for OpenFF 2.0.0 Sage"
+submitter = "" # The person submitting this dataset, you!
+generator = "" # The person that ran and curated the data
 
 [[pipeline]]
-filename = ""
-description = ""
+filename = "generate-combined-dataset.py"
+description = "A python script which shows how the dataset was prepared from the input files."
 
 [[manifest]]
-filename = ""
-description = ""
+filename = "generate-combined-dataset.py"
+
+[[manifest]]
+filename = "dataset.json.bz2"
+description = "The basic dataset ready for submission."
+
+[[manifest]]
+filename = "dataset.pdf"
+description = "A pdf file containing molecule 2D structures."
+
+[[manifest]]
+filename = "dataset.smi"
+description = "SMILES for every molecule in the submission."
 ```
 
 Once you populate the TOML file, you can generate a new QCA submission with the
