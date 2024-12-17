@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import argparse
 import json
 import sys
@@ -9,6 +10,38 @@ from datetime import datetime
 from pathlib import Path
 
 from jinja2 import BaseLoader, Environment
+
+from pkg_resources import resource_filename
+_init_filename = resource_filename('qcaide', 'dat/qca_dataset_submission_path')
+
+class QcaDatasetSubmissionPath:
+
+    _path = open(_init_filename, "r").readlines()[0]
+    
+    def __init__(self, path=None):
+        if path is not None:
+            self.change_path(path)
+    
+    def change_path(self, path):
+        if path is None:
+            raise ValueError(f"Provide a valid path to change the current: {self._path}")
+        elif not os.path.isdir(path):
+            raise ValueError(f"Path to qca-dataset-submission could not be found: {path}")     
+        else:
+            file = open(_init_filename, "w")
+            file.write(path)
+            file.close()
+            self._path = open(_init_filename, "r").readlines()[0]
+        
+    def get_path(self):
+        if self._path == "EXECPATHHERE":
+            raise ValueError(
+                "Path to qca-dataset-submission must be set: python -c 'from qcaide.qcaide import QcaDatasetSubmissionPath; " \
+                "Qcads = QcaDatasetSubmissionPath(path=\"path/to/qca-dataset-submission\"))\n"
+            )
+        return self._path
+
+Qcads = QcaDatasetSubmissionPath() 
 
 readme_tmpl = """\
 # {{sub.name}}
@@ -49,10 +82,18 @@ readme_tmpl = """\
 {% for p in sub.manifest -%}
 * `{{p.filename}}`: {{p.description}}
 {% endfor %}
+
 ## Metadata
 
-* elements: {{elements}}
-* Spec: {{spec}}
+* Elements:
+* QC Specifications:
+  * basis:
+  * implicit_solvent:
+  * keywords:
+  * maxiter:
+  * method:
+  * program:
+  * SCF Properties:
 """
 
 readme_tmpl = Environment(loader=BaseLoader()).from_string(readme_tmpl)
@@ -86,7 +127,7 @@ class Manifest:
 
 
 class Submission:
-    name: str
+    name: str 
     description: str
     short_description: str
     class_: str  # alias class from toml, enum of optimization | torsiondrive
@@ -150,6 +191,17 @@ description = ""\
         self.pipeline = [Pipeline(**p) for p in data["pipeline"]]
         self.manifest = [Manifest(**d) for d in data["manifest"]]
 
+        self.json_dict = {
+            "dataset_name": data["name"].strip(),
+            "dataset_tagline": data["short_description"].strip(),
+            "description": data["description"].strip(),
+            "metadata.submitter": data["submitter"].strip(),
+            "metadata.long_description_url": (
+                "https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/"
+                f"{data['name'].strip().replace(' ', '-')}"
+            )
+        }
+
         return self
 
 
@@ -176,18 +228,23 @@ class Metadata:
 
 def create(args):
     sub = Submission.from_toml(args.input_file)
-    submissions = Path("submissions/")
     date = datetime.today().strftime("%Y-%m-%d")
     base = "-".join(sub.name.split())
     date_name = f"{date}-{base}"
-    dir_ = submissions / date_name
+    dir_ = os.path.join(Qcads.get_path(), "submissions", date_name)
     print(f"creating {dir_}")
-    dir_.mkdir(exist_ok=True)
-    readme = Path(dir_ / "README.md")
+    os.makedirs(dir_, exist_ok=True)
+    readme = Path(os.path.join(dir_, "README.md"))
     if readme.exists():
         exit(0)
     with open(readme, "w") as out:
         print(readme_tmpl.render(sub=sub, date=date), file=out)
+
+    json_output = Path(os.path.join(dir_, "dataset_information.json"))
+    if json_output.exists():
+        exit(0)
+    with open(json_output, "w") as out:
+        json.dump(sub.json_dict, out, indent=4)    
 
 
 def readme(args):
