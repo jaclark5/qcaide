@@ -11,12 +11,9 @@ from pathlib import Path
 
 from jinja2 import BaseLoader, Environment
 
-from pkg_resources import resource_filename
-_init_filename = resource_filename('qcaide', 'dat/qca_dataset_submission_path')
-
 class QcaDatasetSubmissionPath:
 
-    _path = open(_init_filename, "r").readlines()[0]
+    _path = os.environ.get('QDSPATH')
     
     def __init__(self, path=None):
         if path is not None:
@@ -28,16 +25,12 @@ class QcaDatasetSubmissionPath:
         elif not os.path.isdir(path):
             raise ValueError(f"Path to qca-dataset-submission could not be found: {path}")     
         else:
-            file = open(_init_filename, "w")
-            file.write(path)
-            file.close()
-            self._path = open(_init_filename, "r").readlines()[0]
+            os.environ['QDSPATH'] = path
         
     def get_path(self):
-        if self._path == "EXECPATHHERE":
+        if not self._path:
             raise ValueError(
-                "Path to qca-dataset-submission must be set: python -c 'from qcaide.qcaide import QcaDatasetSubmissionPath; " \
-                "Qcads = QcaDatasetSubmissionPath(path=\"path/to/qca-dataset-submission\"))\n"
+                "Path to qca-dataset-submission must be set with the environmental variable: QDSPATH"
             )
         return self._path
 
@@ -240,7 +233,7 @@ def create(args):
     with open(readme, "w") as out:
         print(readme_tmpl.render(sub=sub, date=date), file=out)
 
-    json_output = Path(os.path.join(dir_, "dataset_information.json"))
+    json_output = Path(os.path.join(dir_, "ds_info.json"))
     if json_output.exists():
         exit(0)
     with open(json_output, "w") as out:
