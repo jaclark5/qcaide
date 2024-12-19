@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools>=61.0", "versioningit~=2.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qcaide"
+description = "Helper for generating qca-dataset-submission submissions"
+dynamic = ["version"]
+readme = "README.md"
+
+authors = [
+    { name = "Jennifer A. Clark", email = "jennifer.clark@gnarlyoak.com" },
+    { name = "Brent R. Westbrook"}
+]
+
+# See https://pypi.org/classifiers/
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.11"
+dependencies = [
+        "Jinja2"
+]
+
+[project.optional-dependencies]
+test = ["pytest>=6.1.2"]
+docs = [
+  "sphinx",
+  "sphinx_rtd_theme",
+  "sphinx-argparse",
+  "m2r2",
+  "sphinxcontrib-napoleon",
+]
+
+# Update the urls once the hosting is set up.
+[project.urls]
+"GitHub Source" = "https://github.com/jaclark5/qcaide"
+#"Documentation" = "https://qcaide.readthedocs.io/en/latest/"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = false
+license-files = ["LICENSE"]
+
+[tool.setuptools.packages.find]
+namespaces = false
+where = ["."]
+
+[tool.setuptools.package-data]
+despasito = [
+    "py.typed"
+]
+
+[tool.versioningit]
+default-version = "1+unknown"
+
+[tool.versioningit.format]
+distance = "{base_version}+{distance}.{vcs}{rev}"
+dirty = "{base_version}+{distance}.{vcs}{rev}.dirty"
+distance-dirty = "{base_version}+{distance}.{vcs}{rev}.dirty"
+
+[tool.versioningit.vcs]
+# The method key:
+method = "git"
+# Parameters to pass to the method:
+match = ["*"]
+default-tag = "1.0.0"
+
+[tool.versioningit.write]
+file = "qcaide/_version.py"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+exclude = [
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "build",
+    "dist",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"

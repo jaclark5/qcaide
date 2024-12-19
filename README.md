@@ -22,7 +22,7 @@ which is very likely to be installed already in your
 You can generate an empty input TOML file with the `default` subcommand:
 
 ``` shell
-qcaide default
+python -m qcaide default
 ```
 
 This prints to stdout, so you'll likely want to direct the output into a file,
@@ -62,7 +62,7 @@ Once you populate the TOML file, you can generate a new QCA submission with the
 `create` subcommand in the root of your qca-dataset-submission repo:
 
 ``` shell
-qcaide create input.toml
+python -m qcaide create input.toml
 ```
 
 This will create the directory `submissions/DATE-Your-Submission-Name`, where
@@ -74,7 +74,7 @@ Finally, you can generate most of the main README file table entry for your
 dataset with the `readme` subcommand:
 
 ``` shell
-qcaide readme input.toml
+python -m qcaide readme input.toml
 ```
 
 As long as the current date is the same as the day you generated the submission,
